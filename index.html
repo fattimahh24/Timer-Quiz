@@ -1,0 +1,224 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz-App</title>
+  </head>
+  <body>
+    <div class="container" id="container">
+      <h1>Quiz-App</h1>
+      <div id="timer">10s left...</div>
+      <div id="question">loading...</div>
+      <div id="options"></div>
+      <div id="message"></div>
+    </div>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Rubik+Vinyl&display=swap");
+      body {
+        margin: 0;
+        padding: 0;
+        background: rgb(238, 174, 202);
+        background: linear-gradient(
+          90deg,
+          rgba(238, 174, 202, 1) 0%,
+          rgba(219, 177, 208, 1) 21%,
+          rgba(197, 180, 216, 1) 46%,
+          rgba(148, 187, 233, 1) 100%
+        );
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: "Poppins", serif;
+        font-weight: 500;
+        font-style: normal;
+      }
+      h1 {
+        font-family: "Rubik Vinyl", serif;
+        font-weight: 400;
+        font-style: normal;
+        font-size: 2.5em;
+      }
+      .container {
+        background: #fff;
+        max-width: 600px;
+        width: 95%;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+      #timer {
+        color: red;
+        animation: myAnim 2s ease 0s infinite normal forwards;
+      }
+      @keyframes myAnim {
+        0% {
+          transform: translate(0);
+        }
+
+        20% {
+          transform: translate(-2px, 2px);
+        }
+
+        40% {
+          transform: translate(-2px, -2px);
+        }
+
+        60% {
+          transform: translate(2px, 2px);
+        }
+
+        80% {
+          transform: translate(2px, -2px);
+        }
+
+        100% {
+          transform: translate(0);
+        }
+      }
+      button {
+        background: rgb(238, 174, 202);
+        width: 140px;
+        height: 50px;
+      }
+      #options,
+      button {
+        margin: 10px;
+        border: none;
+        border-radius: 5px;
+        padding: 10px, 20px;
+        transition: all 0.3s ease-in-out;
+        text-align: center;
+        font-size: 1em;
+        font-weight: 500;
+        flex-wrap: wrap;
+        color: #fff;
+      }
+      .options,
+      button:hover {
+        background: rgb(238, 174, 202);
+        background: linear-gradient(
+          90deg,
+          rgba(238, 174, 202, 1) 0%,
+          rgba(219, 177, 190, 1) 4%,
+          rgba(197, 180, 216, 0.929651084066439) 35%,
+          rgba(148, 187, 233, 1) 100%
+        );
+        color: black;
+        transform: scale(1.05);
+      }
+    </style>
+  </body>
+
+  <script>
+    const questions = [
+      {
+        question: "What is the correct HTML tag for inserting a line break?",
+        options: ["<lb>", "<br>", "<break>", "<line>"],
+        correct: 1,
+      },
+
+      {
+        question:
+          "Which CSS property is used to change the text color of an element?",
+        options: ["background-color", "font-color", "color", "text-color"],
+        correct: 2,
+      },
+
+      {
+        question:
+          "Which method is used to write a message directly into the console?",
+        options: [
+          "console.print()",
+          "console.text()",
+          "console.write()",
+          "console.log()",
+        ],
+        correct: 3,
+      },
+
+      {
+        question:
+          "Which attribute is used to specify a link's destination in an <a> tag?",
+        options: ["url", "link", "href", "src"],
+        correct: 2,
+      },
+
+      {
+        question: "How do you select an element with the ID header in CSS?",
+        options: ["#header", "header", ".header", "*header"],
+        correct: 0,
+      },
+    ];
+
+    let currentQuestionIndex = 0;
+    let timer;
+    let timeLeft = 10;
+
+    const questionElement = document.getElementById("question");
+    const optionsElement = document.getElementById("options");
+    const timerElement = document.getElementById("timer");
+    const endMessage = document.getElementById("message");
+
+    function loadQuestion() {
+      clearInterval(timer);
+      timeLeft = 10;
+      timerElement.textContent = `Time Left: ${timeLeft}s`;
+      endMessage.textContent = "";
+
+      if (currentQuestionIndex < questions.length) {
+        const currentQuestion = questions[currentQuestionIndex];
+        questionElement.textContent = currentQuestion.question;
+        optionsElement.innerHTML = "";
+
+        currentQuestion.options.forEach((option, index) => {
+          const button = document.createElement("button");
+          button.textContent = option;
+          button.onclick = () => handleAnswer(index);
+          optionsElement.appendChild(button);
+        });
+
+        startTimer();
+      } else {
+        endQuiz();
+      }
+    }
+
+    function startTimer() {
+      timer = setInterval(() => {
+        timeLeft--;
+        timerElement.textContent = `Time Left: ${timeLeft}s`;
+
+        if (timeLeft === 0) {
+          clearInterval(timer);
+          nextQuestion();
+        }
+      }, 1000);
+    }
+
+    function handleAnswer(selectedIndex) {
+      clearInterval(timer);
+      const currentQuestion = questions[currentQuestionIndex];
+      if (selectedIndex === currentQuestion.correct) {
+        alert("Correct...");
+      } else {
+        alert("Wrong...");
+      }
+      nextQuestion();
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      loadQuestion();
+    }
+
+    function endQuiz() {
+      questionElement.textContent = "";
+      optionsElement.innerHTML = "";
+      timerElement.textContent = "";
+      endMessage.textContent = "𝕐𝕖𝕒𝕙! 𝔽𝕚𝕟𝕚𝕤𝕙...";
+    }
+
+    loadQuestion();
+  </script>
+</html>
